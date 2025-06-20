@@ -5,24 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Página Especial</title>
 <style>
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f0f0f0;padding:20px;text-align:center}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;background:#f0f0f0;text-align:center;padding:20px}
 
-  /* Música */
+  /* player */
   .musica{margin-bottom:20px}
 
-  /* Carrossel */
+  /* layout do carrossel */
   .fotos{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:10px}
-  .foto{background-color:#ccc;border-radius:10px;flex-shrink:0}
-  .foto.lateral{width:26%;height:120px;opacity:.6;filter:blur(1px)}
-  .foto.centro{width:48%;height:160px;box-shadow:0 0 10px rgba(0,0,0,.35)}
+  .foto{border-radius:10px;flex-shrink:0;background:#ddd;overflow:hidden}
+  .foto img{width:100%;height:100%;object-fit:contain}
 
+  /* central e laterais */
+  .foto.centro{width:48%;aspect-ratio:3/2;box-shadow:0 0 10px rgba(0,0,0,.35)}
+  .foto.lateral{width:26%;aspect-ratio:3/2;opacity:.6;filter:blur(1px)}
+
+  /* botões */
+  .botoes{margin-bottom:30px}
   .botoes button{padding:8px 16px;margin:0 8px;background:#333;color:#fff;border:none;border-radius:5px;cursor:pointer}
 
-  .texto{font-size:16px;color:#333;padding:10px 0 30px}
+  /* textos */
+  .texto{font-size:16px;color:#333;padding:10px 0 30px;max-width:800px;margin:0 auto}
 
-  /* Responsivo: some as laterais na tela muito estreita */
-  @media (max-width:450px){
+  /* contador */
+  #contador{font-size:20px;font-weight:bold;margin-bottom:30px}
+
+  /* responsivo */
+  @media(max-width:450px){
     .foto.lateral{display:none}
     .foto.centro{width:90%}
   }
@@ -30,7 +39,7 @@
 </head>
 <body>
 
-<!-- Player de música ------------------------------------------------------->
+<!-- música ----------------------------------------------------------------->
 <div class="musica">
   <audio controls>
     <source src="musica.mp3" type="audio/mpeg">
@@ -38,127 +47,84 @@
   </audio>
 </div>
 
-<!-- CONTADOR --------------------------------------------------------------->
-<div id="contador" style="font-size:20px;font-weight:bold;margin-bottom:30px">Carregando…</div>
+<!-- contador --------------------------------------------------------------->
+<div id="contador">Carregando…</div>
 
-<!-- ===================== CARROSSEL 1 =====================================-->
-<div class="carrossel" id="c1">
-  <div class="fotos">
-    <div class="foto lateral"  id="prev1"></div>
-    <div class="foto centro"   id="curr1"></div>
-    <div class="foto lateral"  id="next1"></div>
-  </div>
-  <div class="botoes">
-    <button onclick="gira(1,-1)">◀ Anterior</button>
-    <button onclick="gira(1, 1)">Próxima ▶</button>
-  </div>
-</div>
+<!-- container onde JS insere carrosséis ------------------------------------>
+<div id="carrosseis"></div>
 
-<div class="texto">
-  Antigamente o pessoal entregava cartas para mensagens especiais...
-  <!-- (seu texto completo aqui) -->
-</div>
-
-<!-- ===================== CARROSSEL 2 =====================================-->
-<div class="carrossel" id="c2">
-  <div class="fotos">
-    <div class="foto lateral"  id="prev2"></div>
-    <div class="foto centro"   id="curr2"></div>
-    <div class="foto lateral"  id="next2"></div>
-  </div>
-  <div class="botoes">
-    <button onclick="gira(2,-1)">◀ Anterior</button>
-    <button onclick="gira(2, 1)">Próxima ▶</button>
-  </div>
-</div>
-
-<div class="texto">
-  Hoje você está completando mais um ano de vida, meu amor...
-</div>
-
-<!-- ===================== CARROSSEL 3 =====================================-->
-<div class="carrossel" id="c3">
-  <div class="fotos">
-    <div class="foto lateral"  id="prev3"></div>
-    <div class="foto centro"   id="curr3"></div>
-    <div class="foto lateral"  id="next3"></div>
-  </div>
-  <div class="botoes">
-    <button onclick="gira(3,-1)">◀ Anterior</button>
-    <button onclick="gira(3, 1)">Próxima ▶</button>
-  </div>
-</div>
-
-<div class="texto">Texto para acompanhar o carrossel 3…</div>
-
-<!-- ===================== CARROSSEL 4 =====================================-->
-<div class="carrossel" id="c4">
-  <div class="fotos">
-    <div class="foto lateral"  id="prev4"></div>
-    <div class="foto centro"   id="curr4"></div>
-    <div class="foto lateral"  id="next4"></div>
-  </div>
-  <div class="botoes">
-    <button onclick="gira(4,-1)">◀ Anterior</button>
-    <button onclick="gira(4, 1)">Próxima ▶</button>
-  </div>
-</div>
-
-<div class="texto">Texto para acompanhar o carrossel 4…</div>
-
-<!-- ===================== CARROSSEL 5 =====================================-->
-<div class="carrossel" id="c5">
-  <div class="fotos">
-    <div class="foto lateral"  id="prev5"></div>
-    <div class="foto centro"   id="curr5"></div>
-    <div class="foto lateral"  id="next5"></div>
-  </div>
-  <div class="botoes">
-    <button onclick="gira(5,-1)">◀ Anterior</button>
-    <button onclick="gira(5, 1)">Próxima ▶</button>
-  </div>
-</div>
-
-<div class="texto">Texto para acompanhar o carrossel 5…</div>
-
-<!-- ===================== JAVASCRIPT ======================================-->
 <script>
-/* --------- LISTAS DE IMAGENS (adicione quantas quiser por carrossel) ------*/
-const imagens = {
-  1: ['foto1.jpg','foto2.jpg','foto3.jpg','foto4.jpg','foto5.jpg'],
-  2: ['foto2_1.jpg','foto2_2.jpg','foto2_3.jpg'],
-  3: ['foto3_1.jpg','foto3_2.jpg','foto3_3.jpg'],
-  4: ['foto4_1.jpg','foto4_2.jpg','foto4_3.jpg'],
-  5: ['foto5_1.jpg','foto5_2.jpg','foto5_3.jpg']
+/* ---------- listas de imagens + textos ----------------------------------*/
+const carrosseis = {
+  1:{imgs:['foto1.jpg','foto2.jpg','foto3.jpg'],
+      txt:`Antigamente o pessoal entregava cartas para mensagens especiais...`},
+  2:{imgs:['foto2_1.jpg','foto2_2.jpg','foto2_3.jpg'],
+      txt:`Hoje você está completando mais um ano de vida, meu amor...`},
+  3:{imgs:['foto3_1.jpg','foto3_2.jpg','foto3_3.jpg'],
+      txt:`Você é luz na vida de todos à sua volta!`},
+  4:{imgs:['foto4_1.jpg','foto4_2.jpg','foto4_3.jpg'],
+      txt:`Com cada sorriso, você transforma o nosso dia!`},
+  5:{imgs:['foto5_1.jpg','foto5_2.jpg','foto5_3.jpg'],
+      txt:`Feliz aniversário! Que essa data se repita por muitos e muitos anos!`}
 };
-/* --------- Estado atual de cada carrossel -------------------------------*/
-const pos = {1:0,2:0,3:0,4:0,5:0};
-/* --------- Renderiza uma foto ------------------------------------------*/
-function render(c){
-  const lista = imagens[c], n = lista.length, i = pos[c];
-  document.getElementById('prev'+c).style.backgroundImage = `url(${lista[(i-1+n)%n]})`;
-  document.getElementById('curr'+c).style.backgroundImage = `url(${lista[i]})`;
-  document.getElementById('next'+c).style.backgroundImage = `url(${lista[(i+1)%n]})`;
-}
-/* --------- Botões esquerda/direita -------------------------------------*/
-function gira(c,passo){
-  const n = imagens[c].length;
-  pos[c] = (pos[c] + passo + n) % n;
-  render(c);
-}
-/* --------- Inicializa todos --------------------------------------------*/
-Object.keys(imagens).forEach(id=>render(Number(id)));
-/* --------- (opcional) auto‑giro de 6 s no carrossel 1 -------------------*/
-// setInterval(()=>gira(1,1),6000);
 
-/* --------- CONTADOR anos‑meses‑dias‑h‑m‑s -------------------------------*/
-const dataInicial = new Date('1984-06-20T00:00:00');
-function atualizarContador(){
-  const agora = new Date();
-  let [anos,meses,dias,horas,min,seg] = [
+/* ---------- estado de cada carrossel ------------------------------------*/
+const pos   = {};            // índice atual da foto
+const refs  = {};            // guarda referências aos <img> para troca rápida
+
+/* ---------- cria e renderiza --------------------------------------------*/
+function criaCarrossel(id,data){
+  pos[id]=0;
+  // estrutura HTML
+  const div=document.createElement('div');
+  div.innerHTML=`
+    <div class="fotos">
+      <div class="foto lateral"><img id="p${id}"></div>
+      <div class="foto centro" ><img id="c${id}"></div>
+      <div class="foto lateral"><img id="n${id}"></div>
+    </div>
+    <div class="botoes">
+      <button onclick="gira(${id},-1)">◀ Anterior</button>
+      <button onclick="gira(${id}, 1)">Próxima ▶</button>
+    </div>
+    <div class="texto">${data.txt}</div>`;
+  document.getElementById('carrosseis').appendChild(div);
+
+  // guarda referências
+  refs[id]={
+    prev:document.getElementById('p'+id),
+    curr:document.getElementById('c'+id),
+    next:document.getElementById('n'+id),
+    list:data.imgs
+  };
+  render(id);
+}
+
+function render(id){
+  const {prev,curr,next,list}=refs[id];
+  const i=pos[id], n=list.length;
+  prev.src = list[(i-1+n)%n];
+  curr.src = list[i];
+  next.src = list[(i+1)%n];
+}
+
+function gira(id,step){
+  const n=refs[id].list.length;
+  pos[id]=(pos[id]+step+n)%n;
+  render(id);
+}
+
+/* ---------- monta todos --------------------------------------------------*/
+for(const id in carrosseis) criaCarrossel(id,carrosseis[id]);
+
+/* ---------- contador desde dataInicial ----------------------------------*/
+const dataInicial=new Date('1983-06-20T00:00:00');
+function atualizaCont(){
+  const agora=new Date();
+  let [anos,meses,dias,horas,min,seg]=[
     agora.getFullYear()-dataInicial.getFullYear(),
     agora.getMonth()-dataInicial.getMonth(),
-    agora.getDate()-dataInicial.getDate(),
+    agora.getDate() -dataInicial.getDate(),
     agora.getHours()-dataInicial.getHours(),
     agora.getMinutes()-dataInicial.getMinutes(),
     agora.getSeconds()-dataInicial.getSeconds()
@@ -166,12 +132,15 @@ function atualizarContador(){
   if(seg<0){seg+=60;min--;}
   if(min<0){min+=60;horas--;}
   if(horas<0){horas+=24;dias--;}
-  if(dias<0){meses--;dias+=new Date(agora.getFullYear(),agora.getMonth(),0).getDate();}
+  if(dias<0){
+    meses--;
+    dias+=new Date(agora.getFullYear(),agora.getMonth(),0).getDate();
+  }
   if(meses<0){meses+=12;anos--;}
-  document.getElementById('contador').textContent =
-    `${anos} anos, ${meses} meses, ${dias} dias, ${horas}h ${min}min ${seg}s`;
+  document.getElementById('contador').textContent=
+    `${anos} anos, ${meses} meses, ${dias} dias, ${horas}h ${min}min ${seg}s`;
 }
-setInterval(atualizarContador,1000); atualizarContador();
+setInterval(atualizaCont,1000);atualizaCont();
 </script>
 </body>
 </html>
